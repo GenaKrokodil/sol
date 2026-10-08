@@ -1,0 +1,154 @@
+<!-- БЛОК 1: Базовая структура и подключение ресурсов -->
+<!-- Определяет тип документа, кодировку и настройки viewport для корректного отображения на всех устройствах. -->
+<!-- Подключает внешний файл стилей style.css для строгого разделения структуры и оформления. -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOL/USDT Terminal</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- БЛОК 2: Главный контейнер и шапка приложения -->
+<!-- Обёртка .app содержит весь интерфейс. Шапка включает кнопку настроек, навигационные вкладки и индикатор статуса. -->
+<!-- Статус по умолчанию OFFLINE, визуальное состояние меняется через JavaScript при запуске системы. -->
+<div class="app">
+    <header class="header glass">
+        <div class="header-left">
+            <button class="settings-btn" onclick="openModal('settingsModal')" title="Настройки">⚙</button>
+            <nav class="tabs">
+                <button class="tab active" onclick="switchTab('monitoring')">Мониторинг</button>
+                <button class="tab" onclick="switchTab('strategy')">Стратегия</button>
+                <button class="tab" onclick="switchTab('analytics')">Аналитика</button>
+                <button class="tab" onclick="switchTab('logs')">Логи</button>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="status-chip">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">OFFLINE</span>
+            </div>
+        </div>
+    </header>
+
+<!-- БЛОК 3: Основной контент - Вкладка Мониторинг -->
+<!-- Содержит основную сетку: слева таблица свечей с телом для динамического рендеринга, справа панель с мини-таблицей и кнопками. -->
+<!-- Таблица свечей имеет id="candleTableBody", который используется JavaScript для точечного обновления данных без перезагрузки. -->
+    <main class="content">
+        <section class="tab-pane active" id="pane-monitoring">
+            <div class="main-grid">
+                <div class="table-panel glass">
+                    <div class="panel-header">
+                        <div class="panel-title">SOL/USDT</div>
+                        <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="candle-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>Volume</th><th>Chg%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="candleTableBody">
+                                <tr class="empty-row"><td colspan="7">Ожидание данных...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="right-panel">
+                    <div class="right-table glass">
+                        <div class="panel-header"><div class="panel-title" style="font-size: 10px;">Данные</div></div>
+                        <div class="table-wrapper">
+                            <table class="mini-table">
+                                <thead><tr><th>Параметр</th><th>Значение</th></tr></thead>
+                                <tbody id="rightTableBody">
+                                    <tr><td colspan="2" style="text-align:center; color:var(--text-muted); padding:20px;">Пусто</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn"><div class="action-btn-icon">◉</div><div class="action-btn-text">Действие 1</div><div class="action-btn-arrow">→</div></button>
+                        <button class="action-btn"><div class="action-btn-icon">◈</div><div class="action-btn-text">Действие 2</div><div class="action-btn-arrow">→</div></button>
+                        <button class="action-btn"><div class="action-btn-icon">▣</div><div class="action-btn-text">Действие 3</div><div class="action-btn-arrow">→</div></button>
+                        <button class="start-btn" id="startButton" onclick="toggleSystem()">START SYSTEM</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- БЛОК 4: Дополнительные вкладки (Стратегия, Аналитика, Логи) -->
+<!-- Заготовки для будущих разделов приложения. Сейчас содержат визуальные заглушки с иконками и текстом. -->
+<!-- Каждая вкладка имеет уникальный id для корректного переключения видимости через функцию switchTab в JS. -->
+        <section class="tab-pane" id="pane-strategy">
+            <div class="empty-pane glass">
+                <div class="empty-pane-icon">⚙</div>
+                <h2>Стратегия</h2>
+                <p>Содержимое будет добавлено позже</p>
+            </div>
+        </section>
+        <section class="tab-pane" id="pane-analytics">
+            <div class="empty-pane glass">
+                <div class="empty-pane-icon">◐</div>
+                <h2>Аналитика</h2>
+                <p>Содержимое будет добавлено позже</p>
+            </div>
+        </section>
+        <section class="tab-pane" id="pane-logs">
+            <div class="empty-pane glass">
+                <div class="empty-pane-icon">▤</div>
+                <h2>Логи</h2>
+                <p>Содержимое будет добавлено позже</p>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- БЛОК 5: Модальное окно настроек -->
+<!-- Скрытое по умолчанию окно, которое появляется поверх контента при нажатии на кнопку настроек в шапке. -->
+<!-- Имеет затемняющий оверлей и кнопку закрытия, события которых обрабатываются через JavaScript. -->
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal glass">
+        <div class="modal-header">
+            <div class="modal-title">Настройки</div>
+            <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            Здесь будет содержимое настроек. Заполните по своему усмотрению.
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛКА ВЫБОРА ДАТ -->
+<div class="modal-overlay" id="dateRangeModal">
+    <div class="modal glass">
+        <div class="modal-header">
+            <div class="modal-title">Выбор диапазона для теста</div>
+            <button class="modal-close" onclick="closeDateModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 15px;">Укажите период, за который нужно загрузить свечи:</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="datetime-local" id="startDate" style="flex:1; padding: 8px; background: #0a0a0d; border: 1px solid var(--glass-border); color: white; border-radius: 6px;">
+                <input type="datetime-local" id="endDate" style="flex:1; padding: 8px; background: #0a0a0d; border: 1px solid var(--glass-border); color: white; border-radius: 6px;">
+            </div>
+            <button class="start-btn" onclick="startBacktest()">ЗАГРУЗИТЬ СВЕЧИ</button>
+        </div>
+    </div>
+</div>
+
+<!-- БЛОК 6: Подключение скриптов -->
+<!-- Подключает внешний файл script.js в конце body для обеспечения полной загрузки DOM перед выполнением кода. -->
+<!-- Гарантирует, что все элементы интерфейса доступны для манипуляций и навешивания событий через JavaScript. -->
+<!-- Подключаем общий скрипт -->
+<script src="/static/script.js"></script>
+<!-- Подключаем логику для конкретных окон -->
+<script src="/static/windows/monitoring.js"></script>
+<script src="/static/windows/strategy.js"></script>
+
+</body>
+</html>
+</body>
+</html>
